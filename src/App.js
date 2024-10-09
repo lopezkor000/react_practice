@@ -15,11 +15,20 @@ let ID = 10;
 function App() {
   const [tasks, setTasks] = useState(DEMO_TASKS);
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     (async () => {
-      const result = await axios("http://localhost:8080/data");
-      setTasks(result.data);
+      try {
+        setLoading(true);
+        const result = await axios("http://localhost:8080/data");
+        setTasks(result.data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        setError("Unable to retreive data from server, try again later");
+      }
     })();
   }, []);
 
@@ -53,28 +62,37 @@ function App() {
     <div className="container">
       <h1>ToDo</h1>
 
-      <div className="col-md-3">
-        <ul className="list-group">
-          {tasks.map((data) => {
-            let { id, description, important, urgent } = data;
-            return (
-              <Task
-                key={id}
-                taskId={id}
-                desc={description}
-                important={important}
-                urgent={urgent}
-                updateDesc={updateDesc}
-              />
-            );
-          })}
-        </ul>
-        <AddTask
-          handleSubmit={handleSubmit}
-          text={text}
-          onInputChange={onInputChange}
-        />
-      </div>
+      {loading && tasks ? (
+        <h2>Loading...</h2>
+      ) : error ? (
+        <div>
+          <h2>Error</h2>
+          <pre>{error}</pre>
+        </div>
+      ) : (
+        <div className="col-md-3">
+          <ul className="list-group">
+            {tasks.map((data) => {
+              let { id, description, important, urgent } = data;
+              return (
+                <Task
+                  key={id}
+                  taskId={id}
+                  desc={description}
+                  important={important}
+                  urgent={urgent}
+                  updateDesc={updateDesc}
+                />
+              );
+            })}
+          </ul>
+          <AddTask
+            handleSubmit={handleSubmit}
+            text={text}
+            onInputChange={onInputChange}
+          />
+        </div>
+      )}
     </div>
   );
 }
