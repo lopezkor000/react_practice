@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 
 function Task({ taskId, desc, important, urgent, updateDesc }) {
   const [edit, setEdit] = useState(false);
@@ -8,7 +9,19 @@ function Task({ taskId, desc, important, urgent, updateDesc }) {
   };
 
   const onBlur = (e) => {
-    if (edit) updateDesc(taskId, e.target.value);
+    if (edit) {
+      (async () => {
+        try {
+          await axios.patch("http://localhost:8080/data", {
+            description: e.target.value,
+            id: taskId,
+          });
+          updateDesc(taskId, e.target.value);
+        } catch (error) {
+          console.log("Could not update item");
+        }
+      })();
+    }
     setEdit(!edit);
   };
 

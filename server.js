@@ -24,4 +24,15 @@ app.get("/data", async (req, res) => {
   res.json(data);
 });
 
+app.patch("/data", async (req, res) => {
+  let description = req.body.description;
+  let id = req.body.id;
+  const result = await db.run(
+    "UPDATE task SET description = ? WHERE id = ? AND description != ?",
+    [description, id, description]
+  );
+  console.log(result);
+  res.json({});
+});
+
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
