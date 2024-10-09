@@ -22,12 +22,15 @@ function Task({ taskId, desc, important, urgent, updateDesc }) {
   return (
     <>
       {edit ? (
-        <input
-          type="text"
-          className="list-group-item form-control input-sm"
-          onBlur={onBlur}
-          defaultValue={desc}
-        />
+        <>
+          <input
+            type="text"
+            className="list-group-item form-control input-sm"
+            onBlur={onBlur}
+            defaultValue={desc}
+            autoFocus
+          />
+        </>
       ) : (
         <li
           className={`list-group-item 
@@ -46,11 +49,10 @@ let ID = 10;
 
 function App() {
   const [tasks, setTasks] = useState(DEMO_TASKS);
+  const [text, setText] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("submitted " + e.target.newTask.value);
-
     setTasks([
       ...tasks,
       {
@@ -60,13 +62,17 @@ function App() {
         urgent: false,
       },
     ]);
-    console.log(ID);
+    setText("");
   };
 
   const updateDesc = (id, val) => {
     setTasks(
       tasks.map((task) => (task.id === id ? { ...task, desc: val } : task))
     );
+  };
+
+  const onInputChange = (e) => {
+    setText(e.value);
   };
 
   return (
@@ -98,6 +104,8 @@ function App() {
                   className="form-control"
                   placeholder="To do"
                   name="newTask"
+                  value={text}
+                  onChange={onInputChange}
                 ></input>
                 <button className="btn btn-primary">+</button>
               </div>
