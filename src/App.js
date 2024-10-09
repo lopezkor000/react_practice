@@ -1,5 +1,6 @@
 import "./App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import Task from "./components/Task";
 import AddTask from "./components/AddTask";
 
@@ -15,13 +16,24 @@ function App() {
   const [tasks, setTasks] = useState(DEMO_TASKS);
   const [text, setText] = useState("");
 
+  useEffect(() => {
+    (async () => {
+      const result = await axios("http://localhost:8080/data");
+      setTasks(result.data);
+    })();
+  }, []);
+
+  const onInputChange = (e) => {
+    setText(e.value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setTasks([
       ...tasks,
       {
         id: ID++,
-        desc: e.target.newTask.value,
+        description: e.target.newTask.value,
         important: false,
         urgent: false,
       },
@@ -31,12 +43,10 @@ function App() {
 
   const updateDesc = (id, val) => {
     setTasks(
-      tasks.map((task) => (task.id === id ? { ...task, desc: val } : task))
+      tasks.map((task) =>
+        task.id === id ? { ...task, description: val } : task
+      )
     );
-  };
-
-  const onInputChange = (e) => {
-    setText(e.value);
   };
 
   return (
@@ -45,12 +55,13 @@ function App() {
 
       <div className="col-md-3">
         <ul className="list-group">
-          {tasks.map(({ id, desc, important, urgent }) => {
+          {tasks.map((data) => {
+            let { id, description, important, urgent } = data;
             return (
               <Task
                 key={id}
                 taskId={id}
-                desc={desc}
+                desc={description}
                 important={important}
                 urgent={urgent}
                 updateDesc={updateDesc}
@@ -59,8 +70,8 @@ function App() {
           })}
         </ul>
         <AddTask
-          text={text}
           handleSubmit={handleSubmit}
+          text={text}
           onInputChange={onInputChange}
         />
       </div>
