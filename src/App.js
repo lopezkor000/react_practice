@@ -4,19 +4,12 @@ import axios from "axios";
 import Task from "./components/Task";
 import AddTask from "./components/AddTask";
 
-const DEMO_TASKS = [
-  { id: 1, desc: "wash", important: true, urgent: false },
-  { id: 2, desc: "eat", important: false, urgent: false },
-  { id: 3, desc: "sleep", important: true, urgent: true },
-];
-
-let ID = 10;
-
 function App() {
-  const [tasks, setTasks] = useState(DEMO_TASKS);
+  const [tasks, setTasks] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -30,7 +23,7 @@ function App() {
         setError("Unable to retreive data from server, try again later");
       }
     })();
-  }, []);
+  }, [submitted]);
 
   const onInputChange = (e) => {
     setText(e.value);
@@ -38,15 +31,22 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setTasks([
-      ...tasks,
-      {
-        id: ID++,
+    (async () => {
+      let response = await axios.post("http://localhost:8080/data", {
         description: e.target.newTask.value,
-        important: false,
-        urgent: false,
-      },
-    ]);
+      });
+      let id = response.data.id;
+      setTasks([
+        ...tasks,
+        {
+          id: id,
+          description: e.target.newTask.value,
+          important: true,
+          urgent: true,
+        },
+      ]);
+      setSubmitted(!submitted);
+    })();
     setText("");
   };
 
