@@ -1,49 +1,13 @@
 import "./App.css";
 import { useState } from "react";
+import Task from "./components/Task";
+import AddTask from "./components/AddTask";
 
 const DEMO_TASKS = [
   { id: 1, desc: "wash", important: true, urgent: false },
   { id: 2, desc: "eat", important: false, urgent: false },
   { id: 3, desc: "sleep", important: true, urgent: true },
 ];
-
-function Task({ taskId, desc, important, urgent, updateDesc }) {
-  const [edit, setEdit] = useState(false);
-
-  const onClick = (e) => {
-    setEdit(!edit);
-  };
-
-  const onBlur = (e) => {
-    if (edit) updateDesc(taskId, e.target.value);
-    setEdit(!edit);
-  };
-
-  return (
-    <>
-      {edit ? (
-        <>
-          <input
-            type="text"
-            className="list-group-item form-control input-sm"
-            onBlur={onBlur}
-            defaultValue={desc}
-            autoFocus
-          />
-        </>
-      ) : (
-        <li
-          className={`list-group-item 
-              ${important && "bg-success text-light"} 
-              ${urgent && "border border-3 border-warning"}`}
-          onClick={onClick}
-        >
-          <div className="small">{desc}</div>
-        </li>
-      )}
-    </>
-  );
-}
 
 let ID = 10;
 
@@ -94,24 +58,11 @@ function App() {
             );
           })}
         </ul>
-
-        <div className="row mt-2">
-          <div className="col-auto">
-            <form onSubmit={handleSubmit}>
-              <div className="input-group mb3">
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="To do"
-                  name="newTask"
-                  value={text}
-                  onChange={onInputChange}
-                ></input>
-                <button className="btn btn-primary">+</button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <AddTask
+          text={text}
+          handleSubmit={handleSubmit}
+          onInputChange={onInputChange}
+        />
       </div>
     </div>
   );
