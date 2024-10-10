@@ -26,7 +26,7 @@ function App() {
   }, [submitted]);
 
   const onInputChange = (e) => {
-    setText(e.value);
+    setText(e.target.value);
   };
 
   const handleSubmit = (e) => {
